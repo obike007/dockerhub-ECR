@@ -11,7 +11,6 @@ pipeline {
     VERSION             = "${BUILD_ID}"
   }
 
-
   
   stages {
     
