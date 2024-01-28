@@ -9,6 +9,10 @@ pipeline {
     REPO_TAG            = "public.ecr.aws/y9h6i0p3"
     APP_NAME            = "cohort5"
     VERSION             = "${BUILD_ID}"
+    PRIVATE_APP_NAME    = "cohort6"
+    PRIVATE_REPO_TAG    = "777509916248.dkr.ecr.eu-west-1.amazonaws.com"
+
+      
   }
 
   
@@ -38,16 +42,16 @@ pipeline {
         }
       }
     } 
-     stage ('Publish to Private ECR') {
-       steps {
-         withEnv(["AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}", "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}", "AWS_DEFAULT_REGION=${env.AWS_DEFAULT_REGION}"]) {
-           sh 'docker login -u AWS -p $(aws ecr get-login-password --region eu-west-1) ${PRIVATE_REPO_TAG}'
-           sh 'docker build -t ${PRIVATE_APP_NAME}:${VERSION} .'
-           sh 'docker tag ${PRIVATE_APP_NAME}:${VERSION} ${PRIVATE_REPO_TAG}/${PRIVATE_APP_NAME}:${VERSION}'
-           sh 'docker push ${PRIVATE_REPO_TAG}/${PRIVATE_APP_NAME}:${VERSION}'
-         }
-       }
-     }
+    stage ('Publish to Private ECR') {
+      steps {
+        withEnv(["AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}", "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}", "AWS_DEFAULT_REGION=${env.AWS_DEFAULT_REGION}"]) {
+          sh 'docker login -u AWS -p $(aws ecr get-login-password --region eu-west-1) ${PRIVATE_REPO_TAG}'
+          sh 'docker build -t ${PRIVATE_APP_NAME}:${VERSION} .'
+          sh 'docker tag ${PRIVATE_APP_NAME}:${VERSION} ${PRIVATE_REPO_TAG}/${PRIVATE_APP_NAME}:${VERSION}'
+          sh 'docker push ${PRIVATE_REPO_TAG}/${PRIVATE_APP_NAME}:${VERSION}'
+        }
+      }
+    }
     stage ('Delete') {
       steps {
         sh 'docker rmi -f $(docker images -qa)'
